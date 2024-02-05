@@ -29,6 +29,6 @@ export class PatientsService {
   }
 
   update(id: string, user: UpdatePatientDto) {
-    return this.patientModel.findByIdAndUpdate(id, user);
+    return this.patientModel.findByIdAndUpdate(id, user, { new: true });
   }
 }

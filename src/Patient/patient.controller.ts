@@ -1,5 +1,18 @@
-import { Controller, Get, Post, Delete, Put, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Patch,
+  Body,
+  Param,
+  NotFoundException,
+  ConflictException,
+  HttpCode,
+} from '@nestjs/common';
 import { PatientsService } from './patient.service';
+import { CreatePatientDto } from 'src/dto/create-patient.dto';
+import { UpdatePatientDto } from 'src/dto/update-patient.dto';
 // import { Patient } from '../schemas/patient.schema';
 
 @Controller('patients')
@@ -8,28 +21,40 @@ export class PatientController {
 
   @Get()
   findAll() {
-    return 'get all users';
+    return this.patientService.findAll();
   }
 
   @Get(':id')
-  findOne() {
-    return 'get one user';
+  async findOne(@Param('id') id: string) {
+    const patient = await this.patientService.findOne(id);
+    if (!patient) throw new NotFoundException('Patient not found');
+    return patient;
   }
 
   @Post()
-  create(@Body() body: any) {
-    console.log(body);
-
-    return 'create user';
+  async create(@Body() body: CreatePatientDto) {
+    try {
+      return await this.patientService.create(body);
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ConflictException('Patient already exists');
+      }
+      throw error;
+    }
   }
 
   @Delete(':id')
-  delete() {
-    return 'delete user';
+  @HttpCode(204)
+  async delete(@Param('id') id: string) {
+    const patient = await this.patientService.delete(id);
+    if (!patient) throw new NotFoundException('Patient not found');
+    return patient;
   }
 
-  @Put(':id')
-  update() {
-    return 'update user';
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() body: UpdatePatientDto) {
+    const patient = await this.patientService.update(id, body);
+    if (!patient) throw new NotFoundException('Patient not found');
+    return patient;
   }
 }
