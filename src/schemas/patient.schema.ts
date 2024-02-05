@@ -7,13 +7,13 @@ export class Patient {
   @Prop({ required: true })
   name: string;
 
-  @Prop()
+  @Prop({ required: true })
   lastName: string;
 
   @Prop({ unique: true })
   email: string;
 
-  @Prop()
+  @Prop({ required: true })
   dni: number;
 
   @Prop()
